@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Throwing Dice</title>
+    <script>
+        let cwidth = 600;
+        let cheight = 400;
+
+        let dicex = 50;
+        let dicey = 50;
+
+        let dicewidth = 100;
+        let diceheight = 100;
+
+        let dotrad = 6;
+        let ctx;
+
+        let dx;
+        let dy;
+
+        let firstturn = true;
+        let point;
+
+
+        function throwdice() {
+            let sum;
+
+            let ch = 1 + Math.floor(Math.random() * 6);
+
+            sum = ch;
+
+            dx = dicex;
+            dy = dicey;
+
+            drawface(ch);
+
+            dx = dicex + 150;
+            ch = 1 + Math.floor(Math.random() * 6);
+
+            sum += ch;
+
+            drawface(ch);
+
+            let bank= Number(document.f.bank.value);
+            
+            if (firstturn) {
+                // let bank= Number(document.f.bank.value);
+
+                console.log('bank value', bank);
+                
+                if (bank<10) {
+                    alert("You ran out of money! Add some more and try again.");
+                    Return;
+                }
+    
+                bank = bank - 10;
+                document.f.bank.value = String(bank);
+                switch (sum) {
+                    case 7:
+                    case 11:
+                        document.f.outcome.value = 'You Win!';
+                        bank =Number(document.f.bank.value);
+                        bank += 20;
+                        document.f.bank.value = String(bank);
+                        console.log('bank value', bank);
+                        break;
+                    case 2:
+                    case 3:
+                    case 12:
+                        document.f.outcome.value = 'You Lose!';
+                        console.log('bank value', bank);
+                        break;
+                    default:
+                        point = sum;
+                        document.f.pv.value = point;
+                        firstturn = false;
+                        console.log('FirstTurn is false')
+                        document.f.stage.value = 'Need follow-up throw.';
+                        document.f.outcome.value = ' ';
+                        console.log('bank value', bank);
+
+                }
+            }
+            else {
+                switch (sum) {
+                    case point:
+                        document.f.outcome.value = 'You Win!';
+                        bank =Number(document.f.bank.value);
+                        bank += 20;
+                        document.f.bank.value = String(bank);
+                        document.f.stage.value = 'Back to first throw.';
+                        document.f.pv.value = ' ';
+                        firstturn = true;
+                        console.log('bank value', bank);
+                        break;
+                    case 7:
+                        document.f.outcome.value = 'You Lose!';
+                        document.f.stage.value = 'Back to first throw.';
+                        console.log('bank value', bank);
+                        document.f.pv.value = " ";
+                        firstturn = true;
+
+                }
+            }
+        }
+
+
+        function drawface(n) {
+            ctx = document.getElementById('canvas').getContext('2d');
+            ctx.lineWidth = 5;
+            ctx.clearRect(dx, dy, dicewidth, diceheight);
+            ctx.strokeRect(dx, dy, dicewidth, diceheight);
+
+            // let dotx;
+            // let doty;
+            ctx.fillStyle = 'red';
+
+            switch (n) {
+                case 1:
+                    draw1();
+                    break;
+                case 2:
+                    draw2();
+                    break;
+                case 3:
+                    draw2();
+                    draw1();
+                    break;
+                case 4:
+                    draw4();
+                    break;
+                case 5:
+                    draw4();
+                    draw1();
+                    break;
+                case 6:
+                    draw4();
+                    draw2mid();
+                    break;
+            }
+
+        }
+
+        function draw1() {
+            let dotx;
+            let doty;
+
+            ctx.beginPath();
+            dotx = dx + .5 * dicewidth;
+
+            doty = dy + .5 * diceheight;
+
+            ctx.arc(dotx, doty, dotrad, 0, Math.PI * 2, true);
+
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function draw2() {
+            let dotx;
+            let doty;
+
+            ctx.beginPath();
+            // creating first dot
+            dotx = dx + 3 * dotrad;
+            doty = dy + 3 * dotrad;
+            ctx.arc(dotx, doty, dotrad, 0, Math.PI * 2, true);
+
+            // creating second dot
+            dotx = dx + dicewidth - 3 * dotrad;
+            doty = dy + diceheight - 3 * dotrad;
+            ctx.arc(dotx, doty, dotrad, 0, Math.PI * 2, true);
+
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function draw4() {
+            let dotx;
+            let doty;
+
+            ctx.beginPath();
+            // creating first dot
+            dotx = dx + 3 * dotrad;
+            doty = dy + 3 * dotrad;
+            ctx.arc(dotx, doty, dotrad, 0, Math.PI * 2, true);
+
+            // creating second dot
+            dotx = dx + dicewidth - 3 * dotrad;
+            doty = dy + diceheight - 3 * dotrad;
+            ctx.arc(dotx, doty, dotrad, 0, Math.PI * 2, true);
+
+            ctx.closePath();
+            ctx.fill();
+            ctx.beginPath();
+
+            // Third Dot
+            dotx = dx + 3 * dotrad;
+            doty = dy + diceheight - 3 * dotrad;
+            ctx.arc(dotx, doty, dotrad, 0, Math.PI * 2, true);
+
+            // Fourth Dot
+            dotx = dx + dicewidth - 3 * dotrad;
+            doty = dy + 3 * dotrad;
+            ctx.arc(dotx, doty, dotrad, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function draw2mid() {
+            let dotx;
+            let doty;
+
+            ctx.beginPath();
+            // creating first dot
+            dotx = dx + 3 * dotrad;
+            doty = dy + .5 * diceheight;
+            ctx.arc(dotx, doty, dotrad, 0, Math.PI * 2, true);
+
+            // creating second dot
+            dotx = dx + dicewidth - 3 * dotrad;
+            doty = dy + .5 * diceheight;
+            ctx.arc(dotx, doty, dotrad, 0, Math.PI * 2, true);
+
+            ctx.closePath();
+            ctx.fill();
+
+        }
+
+
+
+
+
+    </script>
+</head>
+
+<body>
+    <h1>This is the game of CRAPS!!!!</h1>
+    <h2>Rules of the GAME</h2>
+    <p>
+        The player throws a pair of dice. The sum of the two top faces is what matters so a 1
+and a 3 is the same as 2 and 2. The sum of two 6-sided dice can be any number from 2 to
+12. If the player throws a 7 or 11 on the first throw, the player wins. If the player throws a
+2, 3, or 12, the player loses. For any other result (4, 5, 6, 8, 9, 10), this result is recorded as
+what is called the player’s point and a follow-up throw is required. On follow-up throws,
+a throw of 7 loses and a throw of the player’s point wins. For anything else, the game
+continues with the follow-up throw rules.
+    </p>
+    <canvas id="canvas" width="600" height="400" style="border: 2px solid black">
+
+    </canvas>
+    <br>
+    <button onclick="throwdice()">Throw Dice</button>
+    <form name="f">
+        Stage: <input name="stage" value="First Throw">
+        Point: <input name="pv" value=" ">
+        Outcome: <input name="outcome" value=" ">
+        Bank Roll: <input name="bank" value="100">
+    </form>
+</body>
+
+</html>
